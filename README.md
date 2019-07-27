@@ -408,4 +408,4 @@ Check if the output was sucessful
 hdfs dfs -ls /usr/local/hadoop
 ```
  
- You should find a testk82-<timestamp directory>
+ You should find a outputk8-<timestamp directory>
