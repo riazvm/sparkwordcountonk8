@@ -1,4 +1,4 @@
-# sparkwordcountonk8
+# Run a java spark application on Kubernetes and HDFS
 
 ## Setup Standalone HDFS
 
