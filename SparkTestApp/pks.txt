@@ -1,0 +1,27 @@
+ PKS is a jointly developed product offered by VMware and Pivotal. Enterprise PKS delivers Kubernetes-based container services for multi-cloud enterprises and service providers.
+
+Enterprise PKS enables organizations to deploy and operate containerized workloads by providing these capabilities.
+
+High availability. Enterprise PKS monitors and manages Kubernetes clusters from infrastructure to applications to ensure high availability.
+
+Advanced container networking and security. Enterprise PKS integrates with VMware NSX-T to provide pod-level container networking, load balancing, and security policies.
+
+Instant provisioning. You can create Kubernetes clusters quickly and on-demand.
+
+Multi-tenancy. You only access the Kubernetes containers you create.
+
+Secure container registry. You can secure your container workload images by performing vulnerability scans, using image signing, and auditing images.
+
+Persistent storage. You can deploy Kubernetes clusters for both stateless and stateful workloads.
+
+To find videos, demos, blogs, and other information on VMware Enterprise PKS, visit the VMware Enterprise PKS product page.
+
+Finding Enterprise PKS Downloads
+Download Enterprise PKS: https://network.pivotal.io/products/pivotal-container-service/
+
+Download VMware NSX-T Advanced: https://my.vmware.com/web/vmware/info/slug/networking_security/vmware_nsx_t_data_center/2_x
+
+Download Harbor Registry: https://network.pivotal.io/products/harbor-container-registry/
+
+Getting Documentation Updates
+VMware updates this documentation weekly. To view any interim documentation updates, visit the Pivotal Web site.
