@@ -1,6 +1,7 @@
 package com.test.sprak.k8.sample;
 
 import java.util.Arrays;
+import java.util.Calendar;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -35,7 +36,7 @@ public class MyWordCounter {
        
 
         
-       countData.saveAsTextFile("hdfs://192.168.100.113:9000/usr/local/hadoop/testk82");
+       countData.saveAsTextFile("hdfs://192.168.100.113:9000/usr/local/hadoop/outputk8-"+Calendar.getInstance().getTimeInMillis());
     }
 	
 

@@ -1,4 +1,4 @@
- PKS is a jointly developed product offered by VMware and Pivotal. Enterprise PKS delivers Kubernetes-based container services for multi-cloud enterprises and service providers.
+PKS is a jointly developed product offered by VMware and Pivotal. Enterprise PKS delivers Kubernetes-based container services for multi-cloud enterprises and service providers.
 
 Enterprise PKS enables organizations to deploy and operate containerized workloads by providing these capabilities.
 
