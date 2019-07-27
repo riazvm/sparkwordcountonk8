@@ -246,6 +246,7 @@ Create a namespace called monitoring
 
 ```bash
 kubectl create ns spark-operator
+kubectl create ns spark-jobs
 ```
 
 Deploy the spark operator
@@ -279,6 +280,7 @@ Create a hdfs input and output directory and a jar directory to store the SparkT
 hdfs dfs -mkdir -p /usr/local/hadoop/input
 hdfs dfs -mkdir -p /usr/local/hadoop/output
 hdfs dfs -mkdir -p /usr/local/hadoop/jars
+hdfs dfs -chown -R root /usr/local/hadoop
 ```
 
 Clone the sparkwordcountonk8 git repository
@@ -398,3 +400,12 @@ To check logs
 ```bash
 kubectl logs <podname>
 ```
+
+
+Check if the output was sucessful
+
+```bash
+hdfs dfs -ls /usr/local/hadoop
+```
+ 
+ You should find a testk82-<timestamp directory>
