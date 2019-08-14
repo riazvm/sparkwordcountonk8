@@ -1,0 +1,41 @@
+apiVersion: "sparkoperator.k8s.io/v1beta1"
+kind: SparkApplication
+metadata:
+  name: spark-pi
+  namespace: default
+spec:
+  type: Java
+  mode: cluster
+  image: "gcr.io/spark-operator/spark:v2.4.0"
+  imagePullPolicy: Always
+  mainClass: com.test.sprak.k8.sample.MyWordCounter
+  mainApplicationFile: "hdfs://192.168.100.113:9000/usr/local/hadoop/jars/SparkTestApp-1.0.jar"
+  arguments:
+    - "hdfs://192.168.100.111:9000/usr/local/hadoop/input"
+    - "hdfs://192.168.100.111:9000/usr/local/hadoop/outputk8-"
+  sparkVersion: "2.4.0"
+  restartPolicy:
+    type: Never
+  volumes:
+    - name: config-vol
+      configMap:
+        name: dummy-cm
+  driver:
+    cores: 0.1
+    coreLimit: "200m"
+    memory: "512m"
+    labels:
+      version: 2.4.0
+    serviceAccount: spark
+    volumeMounts:
+      - name: config-vol
+        mountPath: /tmp
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    labels:
+      version: 2.4.0
+    volumeMounts:
+      - name: config-vol
+        mountPath: /tmp
