@@ -639,7 +639,7 @@ spec:
   mainApplicationFile: "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/jars/SparkTestApp-1.0.jar"
   arguments:
     - "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/input"
-    - "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/outputk8-"
+    - "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/output/k8-"
   sparkVersion: "2.4.0"
   restartPolicy:
     type: Never
@@ -697,24 +697,37 @@ kubectl get sparkapplications spark-w -o=yaml
 kubectl describe sparkapplication spark-w
 ```
 
+<details><summary>Screenshot 7.5</summary>
+<img src="Images/sparkjobs.png">
+</details>
+<br/> 
+
+
+
 7.6 To check pods running
 
 ```bash
 kubectl get po --all-namespaces
 ```
-
+<details><summary>Screenshot 7.6</summary>
+<img src="Images/sparkpo.png">
+</details>
+<br/> 
 
 7.7 To check logs
 
 ```bash
 kubectl logs spark-w-driver 
 ```
-
+<details><summary>Screenshot 7.7</summary>
+<img src="Images/sparkcomp.png">
+</details>
+<br/> 
 
 7.8 Check if the output was sucessful
 
 ```bash
-hdfs dfs -ls /home/ubuntu/hdfs
+hdfs dfs -ls /home/ubuntu/hdfs/output
 ```
  
- You should find a outputk8-<timestamp directory>
+ You should find a k8-<timestamp directory>
