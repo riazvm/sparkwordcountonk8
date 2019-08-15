@@ -28,12 +28,12 @@ spec:
     volumeMounts:
       - name: "test-volume"
         mountPath: "/tmp"
-   executor:
-      cores: 1
-      instances: 1
-      memory: "512m"
-      labels:
-        version: 2.4.0
-      volumeMounts:
-        - name: "test-volume"
-          mountPath: "/tmp"
+  executor:
+    cores: 1
+    instances: 1
+    memory: "512m"
+    labels:
+      version: 2.4.0
+    volumeMounts:
+      - name: "test-volume"
+        mountPath: "/tmp"

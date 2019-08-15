@@ -20,7 +20,7 @@ public class MyWordCounter {
         
         
         System.out.println("input--------"+input);
-        System.out.println("output--------"+input);
+        System.out.println("output--------"+output);
     	// Create a Java version of the Spark Context from the configuration
     	JavaSparkContext sc = new JavaSparkContext(sparkConf);
     	

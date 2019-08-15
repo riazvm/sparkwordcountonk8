@@ -278,7 +278,7 @@ Use password as VMware1!
 sudo vi /etc/hosts
 
 127.0.0.1 localhost ubuntuguestvm1
-192.168.100.111 localhost ubuntuguestvm1
+192.168.100.111 ubuntuguestvm1
 ```
 
 
@@ -311,9 +311,10 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 ```bash
 ssh localhost
+exist
 ```
 
-2.9 Install Hadoop
+2.9  Install Hadoop
 Go to http://hadoop.apache.org/releases.html and get the download link for the latest Hadoop distro
 Eg: http://mirrors.gigenet.com/apache/hadoop/common/hadoop-3.1.2/hadoop-3.1.2.tar.gz
 
@@ -386,20 +387,24 @@ Note: Change ip where required
 
 2.15.1 Update core-site.xml
 
+<details><summary>core-site.xml</summary>
+
 ```xml
 <configuration>
 	<property>
 	<name>fs.defaultFS</name>
-	<value>hdfs://0.0.0.0:9000</value>
+	<value>hdfs://192.168.100.111:9000</value>
 	</property>
 	<property>
 	<name>hadoop.tmp.dir</name>
-	<value>/usr/local/hadoop/hadooptmpdata</value>
+	<value>/home/ubuntu/hdfs/hadooptmpdata</value>
 	</property>
 
 </configuration>
 
 ```
+</details>
+<br/>
 
 2.15.2 Create a hadooptmpdata directory under /usr/local/hadoop. 
 
@@ -409,6 +414,8 @@ mkdir /usr/local/hadoop/hadooptmpdata
 ```
  
 2.15.3 Update hdfs-site.xml
+
+<details><summary>hdfs-site.xml</summary>
 
 ```xml
 <configuration>
@@ -422,18 +429,20 @@ mkdir /usr/local/hadoop/hadooptmpdata
 		</property>
 </configuration>
 ```
-
+</details>
+<br/>
 
 2.15.4 Create a hdfs/namenode and hdfs/datanode directory under the user home (Eg. /home/ubuntu)
 
 
 ```bash
-mkdir -p hdfs/namenode
-mkdir -p hdfs/datanode
+mkdir -p /home/ubuntu/hdfs/namenode
+mkdir -p /home/ubuntu/hdfs/datanode
 ```
 
 2.15.5 Update mapred-site.xml
 
+<details><summary>mapred-site.xml</summary>
 
 ```xml
 <configuration>
@@ -444,9 +453,12 @@ mkdir -p hdfs/datanode
 </configuration>
 
 ```
+</details>
+<br/>
 
 2.15.6 Update yarn-site.xml
 
+<details><summary>yarn-site.xml</summary>
 
 ```xml
 <configuration>
@@ -460,7 +472,8 @@ mkdir -p hdfs/datanode
 
 
 ```
-
+</details>
+<br/>
 
 ## Step 3: Start the HDFS Cluster
 
@@ -500,46 +513,47 @@ jps
 4.1 Create a hdfs input and output directory and a jar directory to store the SparkTestApp-1.0.jar
 
 ```bash
-hdfs dfs -mkdir -p /usr/local/hadoop/input
-hdfs dfs -mkdir -p /usr/local/hadoop/output
-hdfs dfs -mkdir -p /usr/local/hadoop/jars
-hdfs dfs -chown -R root /usr/local/hadoop
+hdfs dfs -mkdir -p /home/ubuntu/hdfs/input
+hdfs dfs -mkdir -p /home/ubuntu/hdfs/output
+hdfs dfs -mkdir -p /home/ubuntu/hdfs/jars
+hdfs dfs -chown -R root /home/ubuntu/hdfs
 ```
 
-Clone the sparkwordcountonk8 git repository
+4.2 Clone the sparkwordcountonk8 git repository
 
 ```bash
+cd ~/hdfs
 git clone https://github.com/riazvm/sparkwordcountonk8.git
 ```
 
-Copy SparkTestApp/pks.txt to hdfs input dir
+4.3 Copy SparkTestApp/pks.txt to hdfs input dir
 
 ```bash
- hdfs dfs -put pks.txt /usr/local/hadoop/input
+  hdfs dfs -put ~/hdfs/sparkwordcountonk8/SparkTestApp/pks.txt /home/ubuntu/hdfs/input
 ```
 
-Copy SparkTestApp/build/libs/SparkTestApp-1.0.jar to hdfs jar dir
+4.4 Copy SparkTestApp/build/libs/SparkTestApp-1.0.jar to hdfs jar dir
 
 This is from where we will be running our spark job in K8
 
 ```bash
- hdfs dfs -put SparkTestApp-1.0.jar /usr/local/hadoop/jars
+ hdfs dfs -put SparkTestApp-1.0.jar /home/ubuntu/hdfs/jars
 ```
 
-## Step 4: Deploy Spark Operator
+## Step 5: Deploy Spark Operator
 
-4.1 SSH to the cli-vm
+5.1 SSH to the cli-vm
 
-4.2 Login to pks  
+5.2 Login to pks  
 
 ```bash
 pks login -a pks.corp.local -u pksadmin --skip-ssl-validation
 pks get-credentials my-cluster
 ```
 
-4.3 Download and install the [Helm CLI](https://github.com/helm/helm/releases) if you haven't already done so.
+5.3 Download and install the [Helm CLI](https://github.com/helm/helm/releases) if you haven't already done so.
   
-4.4 Create a service account for Tiller and bind it to the cluster-admin role. 
+5.4 Create a service account for Tiller and bind it to the cluster-admin role. 
 
 
 ```bash
@@ -548,19 +562,19 @@ kubectl create serviceaccount --namespace kube-system tiller
 kubectl create clusterrolebinding tiller-clusterrolebinding --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 ```
 
-4.5 Deploy Helm using the service account by running the following command:
+5.5 Deploy Helm using the service account by running the following command:
 
 ```bash
 helm init --service-account tiller
 ```
 
-4.6 Download the latest helm charts from GIT
+5.6 Download the latest helm charts from GIT
 
 ```bash
 git clone https://github.com/helm/charts.git
 ```
 
-4.7 Create namespaces for sparkoperator to run in and a spark-jobs namespace on which the spark jobs would run.
+5.7 Create namespaces for sparkoperator to run in and a spark-jobs namespace on which the spark jobs would run.
 
 ```bash
 kubectl create ns spark-operator
@@ -568,7 +582,7 @@ kubectl create ns spark-jobs
 ```
 
 
-4.8 Deploy the spark operator
+5.8 Deploy the spark operator
 
 Navigate to /charts
 
@@ -577,52 +591,44 @@ The Helm chart has a configuration option called sparkJobNamespace which default
 ```bash
 helm install --name=sparkv1 incubator/sparkoperator --namespace spark-operator --set sparkJobNamespace=spark-jobs --set serviceAccounts.spark.name=spark
 ```
-<details><summary>Screenshot 4.8</summary>
+<details><summary>Screenshot 5.8</summary>
 <img src="Images/sparkoperator.png">
 </details>
 <br/> 
 
 
 
-## Step 5: The Word Counter Spark Project
+## Step 6: The Word Counter Spark Project
  
-5.1 The project SparkTestApp contains a java spark application called MyWordCounter. It can be found under https://github.com/riazvm/sparkwordcountonk8
-
-    The input text is read from a hdfs volume , hardcoded here to hdfs://192.168.100.111:9000/usr/local/hadoop/input and the output is written to a hdfs volume hdfs://192.168.100.111:9000/usr/local/hadoop
-
-Note: this can be just environment variables
-
+6.1 The project SparkTestApp contains a java spark application called MyWordCounter. It can be found under https://github.com/riazvm/sparkwordcountonk8
 
 Create a jar file of the project. Build the project using gradle clean build command , this will create a SparkTestApp-1.0.jar
 
-The pks.txt file contains a sample file which will be processed by the Word Counter program
+The pks.txt file contains a sample file which will be processed by the Word Counter program to output the number of instances each word occurs in the file
 
 
+### Step 7: Run Word count sample in PKS using spark operator
 
+7.1 Define the Spark Application deployment
+     Copy the below contents to a file spark-word.yml . This yaml defines a Spark application . 
+     metadata:name - name of applciation
+     metadata:namespace - namespace that the spark job will run in. This will be the same as the one defined when we created the spark operator
+     spec:type - The Spark application is written in Java 
+     spec:mainClass - Mainclass along with Packagename
+     mainApplicationFile - The main Spark Class to be executed. Replace the ip with the HDFS host ip
+     arguments - we pass the input directory as the first argument in which the pks.txt file exists and the output directory as the second argument. Ip's need to be changed as per the HDFS host
+     Note: This can be a local directory that is accessible to all nodes in the cluster Eg: NFS
+     Can be S3 or http as well
+     arguments - Change the ip's to the HDFS host. Here we pass two arguments one for the input directory and the other for the output. 
 
-### Run Word count sample in PKS using spark operator
-
-Define the Spark Application deployment
-
-Copy the below contents to a file spark-word.yml
-
-This yaml defines a Spark application . 
-
-
-metadata:name - name of applciation
-metadata:namespace - namespace that the spark job will run in. This will be the same as the one defined when we created the spark operator
-spec:type - The Spark application is written in Java 
-spec:mainClass - Mainclass along with Packagename
-mainApplicationFile - here we are taking it from hdfs . We had copied the SparkTestApp-1.0.jar to the hdfs jar folder
-Note: This can be a local directory that is accessible to all nodes in the cluster Eg: NFS
-Can be S3 or http as well
+<details><summary>spark-w.yml</summary>
 
 
 ```yml
 apiVersion: "sparkoperator.k8s.io/v1beta1"
 kind: SparkApplication
 metadata:
-  name: spark-word
+  name: spark-w
   namespace: spark-jobs
 spec:
   type: Java
@@ -630,7 +636,10 @@ spec:
   image: "gcr.io/spark-operator/spark:v2.4.0"
   imagePullPolicy: Always
   mainClass: com.test.sprak.k8.sample.MyWordCounter
-  mainApplicationFile: "hdfs://192.168.100.113:9000/usr/local/hadoop/jars/SparkTestApp-1.0.jar"
+  mainApplicationFile: "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/jars/SparkTestApp-1.0.jar"
+  arguments:
+    - "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/input"
+    - "hdfs://192.168.100.111:9000/home/ubuntu/hdfs/outputk8-"
   sparkVersion: "2.4.0"
   restartPolicy:
     type: Never
@@ -650,7 +659,7 @@ spec:
       - name: "test-volume"
         mountPath: "/tmp"
   executor:
-  	cores: 1
+    cores: 1
     instances: 1
     memory: "512m"
     labels:
@@ -661,48 +670,51 @@ spec:
 
 ```
 
-Run the spark-word applciation
-Running the  command will create a SparkApplication object named spark-word
+
+</details>
+<br/>
+
+7.2 Run the spark-word applciation
+    Running the  command will create a SparkApplication object named spark-w
 
 ```bash
- kubectl apply -f spark-word.yml
+ kubectl apply -f spark-w.yml
 ```
 
-Set context to spark-jobs namespace
+7.3 Set context to spark-jobs namespace
 
 ```bash
  kubectl config set-context my-cluster --namespace spark-jobs
 ```
-Check the object by running the following command:
+7.4 Check the object by running the following command:
 
 ```bash
-kubectl get sparkapplications spark-word -o=yaml
+kubectl get sparkapplications spark-w -o=yaml
 ```
-
-To check events for the SparkApplication object, run the following command
+7.5 To check events for the SparkApplication object, run the following command
 
 ```bash
-kubectl describe sparkapplication spark-word
+kubectl describe sparkapplication spark-w
 ```
 
-To check pods running
+7.6 To check pods running
 
 ```bash
 kubectl get po --all-namespaces
 ```
 
 
-To check logs
+7.7 To check logs
 
 ```bash
-kubectl logs <podname>
+kubectl logs spark-w-driver 
 ```
 
 
-Check if the output was sucessful
+7.8 Check if the output was sucessful
 
 ```bash
-hdfs dfs -ls /usr/local/hadoop
+hdfs dfs -ls /home/ubuntu/hdfs
 ```
  
  You should find a outputk8-<timestamp directory>
